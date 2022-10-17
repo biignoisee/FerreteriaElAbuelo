@@ -1,0 +1,62 @@
+﻿
+@{
+    ViewBag.Title = "Usuarios";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<ol class="breadcrumb mb-4 mt-4">
+    <li class="breadcrumb-item"><a href="index.html">Resumen</a></li>
+    <li class="breadcrumb-item active">Usuarios</li>
+</ol>
+
+
+<div class="card">
+    <div class="card-header">
+        <i class="fas fa-users-cog"></i> Bienvenido a la Lista de Usuarios
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-12">
+                <button class="btn btn-success">Nuevo Usuario</button>
+            </div>
+        </div>
+
+        <hr />
+
+        <table id="tabla" class="display cell-border" style=" width: 100%">
+            <thead>
+                <tr>
+                    <th>Nombres</th>
+                    <th>Apellidos</th>
+                    <th>Correo</th>
+                    <th>Activo</th>
+                </tr>
+            </thead>
+
+            <tbody></tbody>
+
+        </table>
+    </div>
+</div>
+
+
+@*Trabajar con ajax para que devuelva datos dinamicos*@
+
+@section scripts{
+    <script>
+
+        jQuery.ajax({
+            url: '@Url.Action("ListarUsuarios","Home")',
+            type: "GET",
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            success: function (data) {
+                debugger;
+                var texto1 = "Hola soy el texto 1"
+                console.log(data)
+            }
+        })
+
+    </script>
+}
