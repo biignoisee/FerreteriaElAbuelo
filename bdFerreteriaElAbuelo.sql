@@ -222,3 +222,61 @@ go
 
 select * from DISTRITO
 go
+
+
+
+--PROCEDIMIENTOS ALMACENADOS PARA USUARIO  
+CREATE OR ALTER PROC sp_RegistrarUsuario(
+@Nombres varchar(100),
+@Apellidos varchar(100),
+@Correo varchar(100),
+@Clave varchar(100),
+@Activo bit,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado int output				--parametro de salida , devolvera el IdUsuario generado
+)
+as
+begin
+	SET	@Resultado = 0
+	IF NOT EXISTS (SELECT * FROM USUARIO WHERE Correo = @Correo)
+	begin
+		insert into USUARIO(Nombres,Apellidos,Correo,Clave,Activo)values
+		(@Nombres, @Apellidos, @Correo, @Clave, @Activo)
+
+		SET @Resultado = SCOPE_IDENTITY()  --scope_identity  da el id generado (el ultimo de todos) despues de agregar el nuevo usuario
+	end
+	else
+		set @Mensaje = 'El correo del usuario ya existe'
+end
+
+
+--Editar usuario
+CREATE OR ALTER PROC sp_EditarUsuario(
+@IdUsuario int,
+@Nombres varchar(100),
+@Apellidos varchar(100),
+@Correo varchar(100),  --no vamos a editar la contraseña, esta ya es autogenerada / encriptada
+@Activo bit,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado bit output				--parametro de salida
+)
+as
+begin
+	SET @Resultado = 0
+	IF NOT EXISTS (SELECT * FROM USUARIO WHERE CORREO = @Correo AND IdUsuario != @IdUsuario)
+	begin		
+		update top(1) USUARIO set
+			Nombres = @Nombres,
+			Apellidos = @Apellidos,
+			Correo = @Correo,
+			Activo = @Activo
+			where IdUsuario = @IdUsuario
+			set @Resultado = 1
+	end
+	else 
+		set @Mensaje = 'El correo del usuario ya existe'
+end
+
+
+SELECT * FROM USUARIO
+GO

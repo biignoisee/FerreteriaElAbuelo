@@ -7,5 +7,8 @@ update USUARIO set Activo = 0 where IdUsuario = 2
 go
 
 
-select * from USUARIO
+select * from USUARIO 
 go
+
+sp_EditarUsuario '2', 'Omar 02','user 02','user02@example.com','1', 'Correcto', '1'
+
