@@ -1,12 +1,12 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
-    @Styles.Render("~/Content/Site.css")
-    @*@Scripts.Render("~/bundles/modernizr")*@  
+    @Styles.Render("~/Content/css")
+    @*@Scripts.Render("~/bundles/modernizr")*@
 </head>
 <body class="sb-nav-fixed">
     @* Procedo a copiar todo el html y css del diseño de pagina para la elaboración del dashboard *@
@@ -14,17 +14,17 @@
         <!-- Navbar Brand-->
         <a class="navbar-brand ps-3 d-flex gap-1 .justify-content-start" href="@Url.Action("Index","Home")">
             <div class="sb-nav-link-icon"><i class="fas fa-hammer"></i></div>
-            <h5 class="align-self-end mt-1">El Abuelo</h5> 
+            <h5 class="align-self-end mt-1">El Abuelo</h5>
         </a>
         <!-- Sidebar Toggle-->
         <button class="btn btn-link btn-sm order-1order-lg-0  me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
         <!-- Navbar Search-->
         @*<form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-            <div class="input-group">
-                <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
-                <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
-            </div>
-        </form>*@
+                <div class="input-group">
+                    <input class="form-control" type="text" placeholder="Search for..." aria-label="Search for..." aria-describedby="btnNavbarSearch" />
+                    <button class="btn btn-primary" id="btnNavbarSearch" type="button"><i class="fas fa-search"></i></button>
+                </div>
+            </form>*@
         <!-- Navbar-->
         <ul class="navbar-nav ms-auto me-0 me-md-3 my-2 my-md-0">
             <li class="nav-item dropdown">
@@ -43,10 +43,10 @@
                 <div class="sb-sidenav-menu">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Resumen</div>
-                        
+
                         @*  Url.Action("Index", "Home")  pasamos el nombre de la acción y el nombre del controlador*@
 
-                        <a class="nav-link" href="@Url.Action("Index","Home")">   
+                        <a class="nav-link" href="@Url.Action("Index","Home")">
                             <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                             Dashboard
                         </a>

@@ -18,7 +18,8 @@
     <div class="card-body">
         <div class="row">
             <div class="col-12">
-                <button class="btn btn-success">Nuevo Usuario</button>
+                <!-- Con el metodo onclik para abrir el modal cada vez que hagan click -->
+                <button class="btn btn-success" onclick="abrirModal(null)">Nuevo Usuario</button>
             </div>
         </div>
 
@@ -31,6 +32,7 @@
                     <th>Apellidos</th>
                     <th>Correo</th>
                     <th>Activo</th>
+                    <th></th>
                 </tr>
             </thead>
 
@@ -40,11 +42,71 @@
     </div>
 </div>
 
+<!--Modal para el manejo de     data-bs-backdrop="static"  (para que no se cierre si click pantalla)-->
+<div class="modal fade" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" id="FormularioModal" data-bs-backdrop="static">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+
+            <div class="modal-header bg-dark text-white">
+                <h6 class="modal-title">Ingresar Usuarios - Ferreteria El Abuelo</h6>
+
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+
+            </div>
+
+            <div class="modal-body g-2">
+
+                <input id="txtId" type="hidden" value="0"/>
+
+                <div class="row">
+
+                    <div class="col-sm-6">
+                        <label for="txtNombres" class="form-label">Nombres</label>
+                        <input type="text" class="form-control" id="txtNombres" placeholder="insertar nombres...">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="txtApellidos" class="form-label">Apellidos</label>
+                        <input type="text" class="form-control" id="txtApellidos" placeholder="insertar apellidos...">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="txtCorreo" class="form-label">Correo Electronico</label>
+                        <input type="email" class="form-control" id="txtCorreo" placeholder="name@example.com">
+                    </div>
+
+                    <div class="col-sm-6">
+                        <label for="cboActivo" class="form-label">Activo</label>
+                        <select id="cboActivo" class="form-select">
+                            <option value="1">Si</option>
+                            <option value="0">No</option>
+                        </select>
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-success" onclick="Guardar()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
 @*Trabajar con ajax para que devuelva datos dinamicos*@
 
 @section scripts{
     <script>
+        var tabladata;
+        var filaSeleccionada;
+
 
         jQuery.ajax({
             url: '@Url.Action("ListarUsuarios","Home")',
@@ -52,11 +114,108 @@
             dataType: "json",
             contentType: "application/json; charset=utf-8",
             success: function (data) {
-                debugger;
-                var texto1 = "Hola soy el texto 1"
                 console.log(data)
             }
         })
+
+
+
+        tabladata = $("#tabla").DataTable({
+            responsive: true,
+            ordering: false,
+            "ajax": {
+                url: '@Url.Action("ListarUsuarios","Home")',
+                type: "GET",
+                dataType: "json",
+            },
+            "columns": [
+                { "data": "Nombres" },
+                { "data": "Apellidos" },
+                { "data": "Correo" },
+                {
+                    "data": "Activo", "render": function (valor) {
+                        if (valor) {
+                            return '<span class="badge bg-success">Si</span>'
+                        } else {
+                            return '<span class="badge bg-danger">No</span>'
+                        }
+                    }
+                },
+                {
+                    "defaultContent": '<button class="btn btn-primary btn-sm btn-editar"><i class="fas fa-pen"></i></button>' +
+                        '<button class="btn btn-danger btn-sm ms-2"><i class="fas fa-trash"></i></button>',
+                    "orderable": false,
+                    "searcheable": false,
+                    "width": "90px"
+                }
+            ],
+            "language": {
+                "url": "https://cdn.datatables.net/plug-ins/1.12.1/i18n/es-ES.json"
+            }
+        });
+
+        //el formato de la data es un json
+
+        function abrirModal(json) {
+
+            $("#txtId").val(0)
+            $("#txtNombres").val("")
+            $("#txtApellidos").val("")
+            $("#txtCorreo").val("")
+            $("#cboActivo").val(1)
+
+
+            if (json != null) {
+                $("#txtId").val(json.IdUsuario)
+                $("#txtNombres").val(json.Nombres)
+                $("#txtApellidos").val(json.Apellidos)
+                $("#txtCorreo").val(json.Correo)
+                $("#cboActivo").val(json.Activo == true ? 1 : 0)
+
+            }
+
+            $("#FormularioModal").modal("show");
+        }
+
+
+        // Cada vez que se haga click en el icono de editar usuario
+
+        $("#tabla tbody").on("click", '.btn-editar', function () {
+
+            //con this estamos llamando a  porque estamos dentro de la tabla su evento
+            filaSeleccionada = $(this).closest("tr");
+
+            //que seleccione cada uno de los objetos llamado por boton
+            const data = tabladata.row(filaSeleccionada).data()
+
+            //necesitamos pasarle los datos del registro al modal
+            abrirModal(data)
+
+        })
+
+
+        //creando la función guardar
+
+        function Guardar() {
+            var Usuario = {
+                IdUsuario: $("#txtId").val(),
+                Activo: $("#cboActivo").val() == 1 ? true : false,
+                Nombres: $("#txtNombres").val(),
+                Apellidos: $("#txtApellidos").val(),
+                Correo: $("#txtCorreo").val()                 
+            }
+
+            if (Usuario.IdUsuario == 0) {
+                tabladata.row.add(Usuario).draw(false)
+                console.log("Usuario Creado")
+            } else {
+                tabladata.row(filaSeleccionada).data(Usuario).draw(false)
+                console.log("Usuario Editado")
+            }
+
+
+            $("#FormularioModal").modal("hide");
+        }
 
     </script>
 }

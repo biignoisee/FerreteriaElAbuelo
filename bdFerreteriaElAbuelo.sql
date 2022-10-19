@@ -140,7 +140,7 @@ GO
 
 -- INSERTAMOS DATOS A LA TABLA
 
-insert into USUARIO(Nombres,Apellidos,Correo,Clave) values ('test nombre','test apellido','test@example.com','ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae')
+insert into USUARIO(Nombres,Apellidos,Correo,Clave) values ('omar','aguilar','test@example.com','ecd71870d1963316a97e3ac3408c9835ad8cf0f3c1bc703527c30265534f75ae')
 go
 
 select * from USUARIO

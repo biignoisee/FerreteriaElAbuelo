@@ -33,7 +33,7 @@ namespace CapaPresentacionAdmin.Controllers
 
             oLista = new CN_Usuarios().Listar();
 
-            return Json(oLista, JsonRequestBehavior.AllowGet);
+            return Json(new { data = oLista }, JsonRequestBehavior.AllowGet);
         }
 
 
