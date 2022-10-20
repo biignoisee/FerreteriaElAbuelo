@@ -43,9 +43,24 @@ namespace CapaNegocio
             {
                 //se aplica la logica para enviar el correo al usuario
 
+                //string clave = "test123";   //mas tarde creo un metodo que devuelva una autogenerada
+                string clave = CN_Recursos.GenerarClave();
+                string asunto = "Creación de Cuenta, Bienvenido a la Ferreteria 'El Abuelo' ";
+                string mensajeCorreo = "<h3>Su cuenta fue creada correctamente</h3></br><p>Su contraseña para acceder es: !clave!</p>";
 
+                mensajeCorreo = mensajeCorreo.Replace("!clave!", clave);
 
-                string clave = "test123";   //mas tarde creo un metodo que devuelva una autogenerada
+                bool respuesta = CN_Recursos.EnviarCorreo(obj.Correo, asunto, mensajeCorreo);
+
+                if(respuesta)
+                {
+                    obj.Clave = CN_Recursos.ConvertirSha256(clave);
+                    return objCapaDato.Registrar(obj, out Mensaje);
+                } 
+                else{
+                    Mensaje = "No se puede enviar el correo";
+                    return 0;
+                }
                 obj.Clave = CN_Recursos.ConvertirSha256(clave);
 
                 return objCapaDato.Registrar(obj, out Mensaje);
@@ -74,6 +89,8 @@ namespace CapaNegocio
             {
                 Mensaje = "El correo del usuario no puede ser vacio, ingresa un nombre";
             }
+
+
 
             if (string.IsNullOrEmpty(Mensaje))
             {

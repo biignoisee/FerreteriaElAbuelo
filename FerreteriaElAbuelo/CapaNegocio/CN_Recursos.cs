@@ -5,10 +5,25 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
+using System.Net.Mail;
+using System.Net;
+using System.IO;
+
+
 namespace CapaNegocio
 {
     public class CN_Recursos
     {
+
+        //Crear metodo que le genere una clave automática a su correo
+        public static string GenerarClave()
+        {
+            string clave = Guid.NewGuid().ToString("N").Substring(0,8);   //genera un guid que es una clave por parte de c#  - una clave de 0 a 8 digitos
+            return clave;
+        }
+
+
+
         //encriptar de Texto a SHA256  -> Para la clave
 
         public static string ConvertirSha256(string texto)
@@ -24,6 +39,41 @@ namespace CapaNegocio
                     Sb.Append(b.ToString("x2")); //la cadena sea x2 más grande
             }
             return Sb.ToString();
+        }
+
+
+        //crear el metodo para enviar la clave autogenerada hacia el correo gmail
+
+        public static bool EnviarCorreo( string correo, string asunto, string mensaje)
+        {
+            bool resultado = false;
+            try
+            {
+                MailMessage mail = new MailMessage();
+                mail.To.Add(correo);
+                mail.From = new MailAddress("omaraguilar899@gmail.com");
+                mail.Subject = asunto;
+                mail.Body = mensaje;
+                mail.IsBodyHtml = true;
+
+                var smtp = new SmtpClient()
+                {
+                    Credentials = new NetworkCredential("omaraguilar899@gmail.com", "hjezsdwwlqtektpf"),
+                    Host = "smtp.gmail.com",
+                    Port = 587,
+                    EnableSsl = true
+                };
+
+                smtp.Send(mail);
+                resultado = true;
+
+            }
+            catch (Exception ex)
+            {
+                resultado = false;
+            }
+
+            return resultado;
         }
     }
 }

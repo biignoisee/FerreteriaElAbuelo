@@ -44,17 +44,29 @@ namespace CapaPresentacionAdmin.Controllers
             object resultado;
             string mensaje = string.Empty;
 
-            if(objeto.IdUsuario == 0)
+            if (objeto.IdUsuario == 0)
             {
                 resultado = new CN_Usuarios().Registrar(objeto, out mensaje);
             }
-            else {
+            else
+            {
                 resultado = new CN_Usuarios().Editar(objeto, out mensaje);
             }
 
             return Json(new { resultado = resultado, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
-        
+
         }
 
+
+        [HttpPost]
+        public JsonResult EliminarUsuario(int id)
+        {
+            bool resultado = false;
+            string mensaje = string.Empty;
+
+            resultado = new CN_Usuarios().Eliminar(id, out mensaje);
+
+            return Json(new { resultado = resultado, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
+        }
     }
 }

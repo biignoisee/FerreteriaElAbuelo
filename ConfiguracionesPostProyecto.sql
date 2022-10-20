@@ -10,5 +10,7 @@ go
 select * from USUARIO 
 go
 
-sp_EditarUsuario '2', 'Omar 02','user 02','user02@example.com','1', 'Correcto', '1'
 
+--EN CASO DE ACTUALIZAR USE ESTE SCRIPT SOLO COMO EJEMPLO PARA VALIDAR EL STORE PROCEDURE
+
+sp_EditarUsuario '2', 'Omar 02','user 02','user02@example.com','1', 'Correcto', '1'

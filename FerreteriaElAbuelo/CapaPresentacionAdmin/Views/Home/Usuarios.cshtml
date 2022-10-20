@@ -152,7 +152,7 @@
                 },
                 {
                     "defaultContent": '<button class="btn btn-primary btn-sm btn-editar"><i class="fas fa-pen"></i></button>' +
-                        '<button class="btn btn-danger btn-sm ms-2"><i class="fas fa-trash"></i></button>',
+                        '<button class="btn btn-danger btn-sm ms-2 btn-eliminar"><i class="fas fa-trash"></i></button>',
                     "orderable": false,
                     "searcheable": false,
                     "width": "90px"
@@ -189,7 +189,6 @@
 
 
         // Cada vez que se haga click en el icono de editar usuario
-
         $("#tabla tbody").on("click", '.btn-editar', function () {
 
             //con this estamos llamando a  porque estamos dentro de la tabla su evento
@@ -204,15 +203,60 @@
         })
 
 
-        //creando la función guardar
+        // Cada vez que se haga click en el boton eliminar
+        $("#tabla tbody").on("click", '.btn-eliminar', function () {
 
+            //con this estamos llamando a  porque estamos dentro de la tabla su evento
+            var usuarioSeleccionado = $(this).closest("tr");
+
+            //que seleccione cada uno de los objetos llamado por boton
+            const data = tabladata.row(usuarioSeleccionado).data()
+
+
+            swal({
+                title: "Estas seguro?",
+                text: "¿Deseas eliminar el usuario?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-primary",
+                confirmButtonText: "Eliminar Usuario",
+                cancelButttonText: "Cancelar",
+                closeOnConfirm: true,
+            },
+            function () {
+                    jQuery.ajax({
+                        url: '@Url.Action("EliminarUsuario", "Home")',
+                        type: "POST",
+                        data: JSON.stringify({ id: data.IdUsuario }),
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            if (data.resultado) {
+                                tabladata.row(usuarioSeleccionado).remove().draw();
+                            } else {
+                                swal("No se puede eliminar", data.mensaje, "error")
+                            }
+
+                        },
+                        error: function (error) {
+                            console.log(error)
+                        },
+                        beforeSend: function () {
+
+                        },
+                    });
+            })
+        })
+
+
+        //creando la función guardar
         function Guardar() {
             var Usuario = {
                 IdUsuario: $("#txtId").val(),
                 Activo: $("#cboActivo").val() == 1 ? true : false,
                 Nombres: $("#txtNombres").val(),
                 Apellidos: $("#txtApellidos").val(),
-                Correo: $("#txtCorreo").val()                 
+                Correo: $("#txtCorreo").val()
             }
 
             //estructura ajax
@@ -225,8 +269,9 @@
                 contentType: "application/json; charset=utf-8",
                 success: function (data) {
 
-                    //USUARIO NUEVO
+                    $(".modal-body").LoadingOverlay("hide");
 
+                    //USUARIO NUEVO
                     if (Usuario.IdUsuario == 0) {
 
                         if (data.resultado != 0) {
@@ -238,10 +283,7 @@
                         } else {
                             $("#mensajeError").text(data.mensaje)
                             $("#mensajeError").show()
-                        }    
-                        
-                        
-
+                        }
                     //USUARIO EDITADO
                     } else {
 
@@ -256,22 +298,22 @@
                             $("#mensajeError").text(data.mensaje)
                             $("#mensajeError").show()
                         }
-
-                        
-                        
                     }
-
                 },
                 error: function (error) {
-                    console.log(error)
+                    $(".modal-body").LoadingOverlay("hide");
+
+                    $("#mensajeError").text("Error en el ajax")
+                    $("#mensajeError").show()
                 },
                 beforeSend: function () {
-
-                },
+                    $(".modal-body").LoadingOverlay("show", {
+                        imageResizeFactor: 2,
+                        text: "Un momento ...",
+                        size: 15
+                    })
+                }
             });
-
-
-            
         }
 
     </script>
