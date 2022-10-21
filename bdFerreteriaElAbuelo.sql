@@ -223,7 +223,8 @@ go
 select * from DISTRITO
 go
 
-
+select * from USUARIO
+go
 
 --PROCEDIMIENTOS ALMACENADOS PARA USUARIO  
 CREATE OR ALTER PROC sp_RegistrarUsuario(
@@ -280,3 +281,249 @@ end
 
 SELECT * FROM USUARIO
 GO
+
+
+
+--PROCEDIMIENTOS ALMACENADOS CATEGORIAS
+
+CREATE OR ALTER PROC sp_RegistrarCategoria(
+@Descripcion varchar(100),
+@Activo bit,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado int output				--parametro de salida , devolvera el IdUsuario generado
+)
+as
+begin
+	SET	@Resultado = 0
+	IF NOT EXISTS (SELECT * FROM CATEGORIA WHERE Descripcion = @Descripcion)
+	begin
+		insert into CATEGORIA(Descripcion,Activo)values
+		(@Descripcion, @Activo)
+
+		SET @Resultado = SCOPE_IDENTITY()  --scope_identity  da el id generado (el ultimo de todos) despues de agregar el nuevo usuario
+	end
+	else
+		set @Mensaje = 'La categoria ya existe'
+end
+
+
+--Editar categoria
+CREATE OR ALTER PROC sp_EditarCategoria(
+@IdCategoria int,
+@Descripcion varchar(100),
+@Activo bit,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado bit output				--parametro de salida
+)
+as
+begin
+	SET @Resultado = 0
+	IF NOT EXISTS (SELECT * FROM CATEGORIA WHERE Descripcion = @Descripcion AND IdCategoria != @IdCategoria)
+	begin		
+		update top(1) CATEGORIA set
+			Descripcion = @Descripcion,
+			Activo = @Activo
+			where IdCategoria = @IdCategoria
+			set @Resultado = 1
+	end
+	else 
+		set @Mensaje = 'La categoria ya existe'
+end
+
+
+create or alter proc sp_EliminarCategoria(
+@IdCategoria int,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado bit output				--parametro de salida
+)
+as
+begin
+	SET @Resultado = 0
+	--si no esta relacionado a un producto dicha categoria    -> el usuario tendria que eliminar un producto para que elimine dicha categoria
+	IF NOT EXISTS (SELECT * FROM PRODUCTO p 
+	inner join CATEGORIA c on c.IdCategoria = p.IdCategoria
+	where p.IdCategoria = @IdCategoria)
+	begin 
+		delete top(1) from CATEGORIA where IdCategoria = @IdCategoria
+		Set @Resultado = 1
+	end
+	else
+		set @Mensaje = 'La categoria se encuentra relacionado a un producto'
+end
+
+
+Select * From CATEGORIA
+go
+
+
+
+--STORE PROCEDURE PARA MARCASS
+
+
+
+CREATE OR ALTER PROC sp_RegistrarMarca(
+@Descripcion varchar(100),
+@Activo bit,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado int output				--parametro de salida , devolvera el IdUsuario generado
+)
+as
+begin
+	SET	@Resultado = 0
+	IF NOT EXISTS (SELECT * FROM MARCA WHERE Descripcion = @Descripcion)
+	begin
+		insert into MARCA(Descripcion,Activo)values
+		(@Descripcion, @Activo)
+
+		SET @Resultado = SCOPE_IDENTITY()  --scope_identity  da el id generado (el ultimo de todos) despues de agregar el nuevo usuario
+	end
+	else
+		set @Mensaje = 'La marca ya existe'
+end
+
+
+--Editar categoria
+CREATE OR ALTER PROC sp_EditarMarca(
+@IdMarca int,
+@Descripcion varchar(100),
+@Activo bit,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado bit output				--parametro de salida
+)
+as
+begin
+	SET @Resultado = 0
+	IF NOT EXISTS (SELECT * FROM MARCA WHERE Descripcion = @Descripcion AND IdMarca != @IdMarca)
+	begin		
+		update top(1) MARCA set
+			Descripcion = @Descripcion,
+			Activo = @Activo
+			where IdMarca = @IdMarca
+			set @Resultado = 1
+	end
+	else 
+		set @Mensaje = 'La marca ya existe'
+end
+
+
+create or alter proc sp_EliminarMarca(
+@IdMarca int,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado bit output				--parametro de salida
+)
+as
+begin
+	SET @Resultado = 0
+	--si no esta relacionado a un producto dicha categoria    -> el usuario tendria que eliminar un producto para que elimine dicha categoria
+	IF NOT EXISTS (SELECT * FROM PRODUCTO p 
+	inner join Marca m on m.IdMarca = p.IdMarca
+	where p.IdMarca = @IdMarca)
+	begin 
+		delete top(1) from MARCA where IdMarca = @IdMarca
+		Set @Resultado = 1
+	end
+	else
+		set @Mensaje = 'La marca se encuentra relacionado a un producto'
+end
+
+
+Select * From MARCA
+go
+
+
+
+--	STORE PROCEDUREEEEEE PRODUCTO
+CREATE OR ALTER PROC sp_RegistrarProducto(
+@Nombre varchar(100),
+@Descripcion varchar(100),
+@IdMarca varchar(100),
+@IdCategoria varchar(100),
+@Precio decimal (10,2),
+@Stock int,
+@Activo bit,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado int output				--parametro de salida , devolvera el IdUsuario generado
+)
+as
+begin
+	SET	@Resultado = 0
+	IF NOT EXISTS (SELECT * FROM PRODUCTO WHERE NOMBRE = @Nombre)
+	begin
+		insert into PRODUCTO(Nombre,Descripcion,IdMarca, IdCategoria,Precio,Stock,Activo)values
+		(@Nombre,@Descripcion,@IdMarca,@IdCategoria,@Precio,@Stock, @Activo)
+
+		SET @Resultado = SCOPE_IDENTITY()  --scope_identity  da el id generado (el ultimo de todos) despues de agregar el nuevo usuario
+	end
+	else
+		set @Mensaje = 'El producto ya existe'
+end
+
+
+--Editar
+
+CREATE OR ALTER PROC sp_EditarProducto(
+@IdProducto int,
+@Nombre varchar(100),
+@Descripcion varchar(100),
+@IdMarca varchar(100),
+@IdCategoria varchar(100),
+@Precio decimal (10,2),
+@Stock int,
+@Activo bit,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado int output				--parametro de salida , devolvera el IdUsuario generado
+)
+as
+begin
+	SET @Resultado = 0
+	IF NOT EXISTS (SELECT * FROM PRODUCTO WHERE Nombre = @Nombre AND IdProducto != @IdProducto)
+	begin		
+		update top(1) PRODUCTO set
+			Nombre = @Nombre,
+			Descripcion = @Descripcion,
+			IdMarca= @IdMarca,
+			IdCategoria = @IdCategoria,
+			Precio= @Precio,
+			Stock= @Stock,
+			Activo = @Activo
+			where IdProducto = @IdProducto
+			set @Resultado = 1
+	end
+	else 
+		set @Mensaje = 'El producto ya existe'
+end
+
+
+--eliminar producto
+create or alter proc sp_EliminarProducto(
+@IdProducto int,
+@Mensaje varchar(500) output,		--parametro de salida
+@Resultado bit output				--parametro de salida
+)
+as
+begin
+	SET @Resultado = 0
+	If NOT EXISTS (Select * from DETALLE_VENTA dv
+	inner join Producto p on p.IdProducto = dv.IdProducto
+	WHERE p.IdProducto = @IdProducto)
+	begin
+		delete top(1) from PRODUCTO where IdProducto = @IdProducto
+		SET @Resultado = 1
+	end
+	else
+	set @Mensaje = 'El producto se encuentra relacionado a una venta'
+end
+
+select * from Producto
+go
+
+
+--LISTAR PRODUCTOS
+
+SELECT P.IdProducto, p.Nombre, p.Descripcion,
+m.IdMarca, m.Descripcion[Marcas],
+c.IdCategoria, c.Descripcion[Categorias],
+p.Precio, p.Stock, p.RutaImagen, p.NombreImagen, p.Activo
+FROM PRODUCTO p
+inner join Marca m on m.IdMarca = P.IdMarca
+inner join CATEGORIA C on C.IdCategoria = P.IdCategoria
