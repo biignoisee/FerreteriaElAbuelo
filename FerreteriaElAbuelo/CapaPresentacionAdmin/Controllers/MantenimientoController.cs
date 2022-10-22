@@ -228,12 +228,26 @@ namespace CapaPresentacionAdmin.Controllers
                 }
             }
 
-
-
-
-
             return Json(new { operacion_exitosa = operacion_exitosa,idGenerado = oProducto.IdProducto, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
 
+        }
+
+        [HttpPost]
+        public JsonResult ImagenProducto(int id)
+        {
+            bool conversion;
+            Producto oProducto = new CN_Producto().Listar().Where(p => p.IdProducto == id).FirstOrDefault();
+
+            string textoBase64 = CN_Recursos.ConvertirBase64(Path.Combine(oProducto.RutaImagen, oProducto.NombreImagen), out conversion);
+
+            return Json(new
+            {
+                conversion = conversion,
+                textoBase64 = textoBase64,
+                extension = Path.GetExtension(oProducto.NombreImagen)
+            },
+                JsonRequestBehavior.AllowGet
+            );
         }
 
 
@@ -248,5 +262,6 @@ namespace CapaPresentacionAdmin.Controllers
             return Json(new { resultado = resultado, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
         }
 
+        //fin mantenedor
     }
 }
