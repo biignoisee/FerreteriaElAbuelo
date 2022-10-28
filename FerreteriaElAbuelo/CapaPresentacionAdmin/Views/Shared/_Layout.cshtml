@@ -4,13 +4,13 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewBag.Title - Mi aplicación ASP.NET</title>
+    <title>@ViewBag.Title - Ferreteria El Abuelo</title>
     @Styles.Render("~/Content/css")
     @*@Scripts.Render("~/bundles/modernizr")*@
 </head>
-<body class="sb-nav-fixed">
+<body class="sb-nav-fixed" style="background-color: #0d1016; ">
     @* Procedo a copiar todo el html y css del diseño de pagina para la elaboración del dashboard *@
-    <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
+    <nav class="sb-topnav navbar navbar-expand navbar-dark" style="background-color: #0d1016; ">
         <!-- Navbar Brand-->
         <a class="navbar-brand ps-3 d-flex gap-1 .justify-content-start" href="@Url.Action("Index","Home")">
             <div class="sb-nav-link-icon"><i class="fas fa-hammer"></i></div>
@@ -40,7 +40,7 @@
     <div id="layoutSidenav">
         <div id="layoutSidenav_nav">
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
-                <div class="sb-sidenav-menu">
+                <div class="sb-sidenav-menu" style="background-color: #0d1016;">
                     <div class="nav">
                         <div class="sb-sidenav-menu-heading">Resumen</div>
 
@@ -73,26 +73,26 @@
                         </a>
                     </div>
                 </div>
-                <div class="sb-sidenav-footer">
-                    <div class="small">Logged in as:</div>
-                    Start Bootstrap
+                <div class="sb-sidenav-footer" style="background-color: #141820; ">
+                    <div class="small">Hecho por Grupo09</div>
+                    Ferreteria El Abuelo
                 </div>
             </nav>
         </div>
-        <div id="layoutSidenav_content">
+        <div id="layoutSidenav_content" style="background-color: #dfe8ed;">
             <main>
                 <div class="container-fluid px-4">
                     @RenderBody()
                 </div>
             </main>
-            <footer class="py-4 bg-light mt-auto">
+            <footer class="py-4 mt-auto" style="background-color: #dfe8ed;">
                 <div class="container-fluid px-4">
                     <div class="d-flex align-items-center justify-content-between small">
-                        <div class="text-muted">Copyright &copy; Your Website 2022</div>
+                        <div class="text-muted">Copyright &copy; Ferreteria El Abuelo 2022</div>
                         <div>
-                            <a href="#">Privacy Policy</a>
+                            <a href="#">Política de Privacidad</a>
                             &middot;
-                            <a href="#">Terms &amp; Conditions</a>
+                            <a href="#">Terminos &amp; Condiciones</a>
                         </div>
                     </div>
                 </div>

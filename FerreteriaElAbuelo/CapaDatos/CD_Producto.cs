@@ -50,7 +50,7 @@ namespace CapaDatos
                                 new Producto()
                                 {
                                     IdProducto = Convert.ToInt32(datareader["IdProducto"]),
-                                    Nombre = datareader["Descripcion"].ToString(),
+                                    Nombre = datareader["Nombre"].ToString(),
                                     Descripcion = datareader["Descripcion"].ToString(),
                                     oMarca = new Marca() { IdMarca = Convert.ToInt32(datareader["IdMarca"]), Descripcion = datareader["Marcas"].ToString() },
                                     oCategoria = new Categoria() { IdCategoria = Convert.ToInt32(datareader["IdCategoria"]), Descripcion = datareader["Categorias"].ToString() },
@@ -175,27 +175,24 @@ namespace CapaDatos
                 using (SqlConnection oconexion = new SqlConnection(Conexion.connection))
                 {
 
-                    string query = "update PRODUCTO set Rutaimagen = @rutaimagen, NombreImage = @nombreimagen where IdProducto = @idproducto";
+                    string query = "update producto set RutaImagen = @rutaimagen, NombreImagen = @nombreimagen where IdProducto = @idproducto";
 
+                    SqlCommand cmd = new SqlCommand(query, oconexion);
+                    cmd.Parameters.AddWithValue("@rutaimagen", obj.RutaImagen);
+                    cmd.Parameters.AddWithValue("@nombreimagen", obj.NombreImagen);
+                    cmd.Parameters.AddWithValue("@idproducto", obj.IdProducto);
+                    cmd.CommandType = CommandType.Text;
 
-                    SqlCommand command = new SqlCommand(query, oconexion);
-                    command.Parameters.AddWithValue("@rutaimagen", obj.RutaImagen);
-                    command.Parameters.AddWithValue("@nombreimagen", obj.NombreImagen);
-                    command.Parameters.AddWithValue("@idproducto", obj.IdProducto);
-                    command.Parameters.Add("Resultado", SqlDbType.Int).Direction = ParameterDirection.Output;
-                    command.Parameters.Add("Mensaje", SqlDbType.VarChar, 500).Direction = ParameterDirection.Output;
-
-                    command.CommandType = CommandType.Text;
                     oconexion.Open();
 
-                    if (command.ExecuteNonQuery() > 0 )
+                    if (cmd.ExecuteNonQuery() > 0)
                     {
                         resultado = true;
-                    } else
-                    {
-                        Mensaje = "No se pudo actualizar la imagen";
                     }
-
+                    else
+                    {
+                        Mensaje = "No se pudo actualizar imagen";
+                    }
                 }
             }
             catch (Exception ex)
