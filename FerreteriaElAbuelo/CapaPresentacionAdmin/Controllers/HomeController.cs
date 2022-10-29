@@ -7,9 +7,7 @@ using System.Web.Mvc;
 //Agregamos las referencias
 using CapaNegocio;
 using CapaEntidad;
-
-
-
+using System.Web.Services.Description;
 
 namespace CapaPresentacionAdmin.Controllers
 {
@@ -67,6 +65,14 @@ namespace CapaPresentacionAdmin.Controllers
             resultado = new CN_Usuarios().Eliminar(id, out mensaje);
 
             return Json(new { resultado = resultado, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpGet]
+        public JsonResult VistaDashboard()
+        {
+            Dashboard objeto = new CN_Reporte().VerDashboard();
+            return Json(new { resultado = objeto }, JsonRequestBehavior.AllowGet);
         }
     }
 }
