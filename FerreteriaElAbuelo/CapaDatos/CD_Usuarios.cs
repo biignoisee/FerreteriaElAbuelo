@@ -173,5 +173,72 @@ namespace CapaDatos
 
             return resultado;
         }
+        
+        //Creamos el metodo de cambiar clave que permita al usuario luego de loguearse cambiar clave
+
+        public bool CambiarClave(int idUsuario, string nuevaClave, out string Mensaje)
+        {
+            bool resultado = false;
+            Mensaje = string.Empty;
+
+            try
+            {
+                using(SqlConnection oconexion = new SqlConnection(Conexion.connection))
+                {
+                    SqlCommand command = new SqlCommand("update usuario set clave = @nuevaClave, reestablecer = 0 where idUsuario = @id", oconexion);
+                    command.Parameters.AddWithValue("@id", idUsuario);
+                    command.Parameters.AddWithValue("@nuevaClave", nuevaClave);
+                    command.CommandType = CommandType.Text;
+
+                    oconexion.Open();
+                    resultado = command.ExecuteNonQuery() > 0 ? true : false;
+                    // executeNonQuery devuelve el numero de filas afectadas, por lo que pedimos > 0, si no devuelve 
+                    // más de 0 es porque no fue afectada ninguna fila, por ende returna false
+                }
+
+            } catch( Exception ex)
+            {
+                resultado = false;
+                Mensaje = ex.Message;
+            }
+
+
+            return resultado;
+        }
+
+
+        //Ahora toca el metodo Reestablecer Contraseña
+        public bool ReestablecerClave(int idUsuario, string clave, out string Mensaje)
+        {
+            bool resultado = false;
+            Mensaje = string.Empty;
+
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.connection))
+                {
+                    SqlCommand command = new SqlCommand("update usuario set clave = @clave, reestablecer = 1 where idUsuario = @id", oconexion);
+                    command.Parameters.AddWithValue("@id", idUsuario);
+                    command.Parameters.AddWithValue("@clave", clave);
+                    command.CommandType = CommandType.Text;
+
+                    oconexion.Open();
+                    resultado = command.ExecuteNonQuery() > 0 ? true : false;
+                    // executeNonQuery devuelve el numero de filas afectadas, por lo que pedimos > 0, si no devuelve 
+                    // más de 0 es porque no fue afectada ninguna fila, por ende returna false
+                }
+
+            }
+            catch (Exception ex)
+            {
+                resultado = false;
+                Mensaje = ex.Message;
+            }
+
+
+            return resultado;
+        }
+
+
     }
 }

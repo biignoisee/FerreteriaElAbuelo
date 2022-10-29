@@ -249,7 +249,7 @@ begin
 	else
 		set @Mensaje = 'El correo del usuario ya existe'
 end
-
+go
 
 --Editar usuario
 CREATE OR ALTER PROC sp_EditarUsuario(
@@ -305,7 +305,7 @@ begin
 	else
 		set @Mensaje = 'La categoria ya existe'
 end
-
+go
 
 --Editar categoria
 CREATE OR ALTER PROC sp_EditarCategoria(
@@ -329,7 +329,7 @@ begin
 	else 
 		set @Mensaje = 'La categoria ya existe'
 end
-
+go
 
 create or alter proc sp_EliminarCategoria(
 @IdCategoria int,
@@ -380,7 +380,7 @@ begin
 	else
 		set @Mensaje = 'La marca ya existe'
 end
-
+go
 
 --Editar categoria
 CREATE OR ALTER PROC sp_EditarMarca(
@@ -404,7 +404,7 @@ begin
 	else 
 		set @Mensaje = 'La marca ya existe'
 end
-
+go
 
 create or alter proc sp_EliminarMarca(
 @IdMarca int,
@@ -457,7 +457,7 @@ begin
 	else
 		set @Mensaje = 'El producto ya existe'
 end
-
+go
 
 --Editar
 
@@ -492,7 +492,7 @@ begin
 	else 
 		set @Mensaje = 'El producto ya existe'
 end
-
+go
 
 --eliminar producto
 create or alter proc sp_EliminarProducto(
@@ -527,3 +527,52 @@ p.Precio, p.Stock, p.RutaImagen, p.NombreImagen, p.Activo
 FROM PRODUCTO p
 inner join Marca m on m.IdMarca = P.IdMarca
 inner join CATEGORIA C on C.IdCategoria = P.IdCategoria
+
+
+select * from USUARIO
+
+select * from CATEGORIA
+
+select * from marca
+go
+
+--Crear procedimientos almacenados para poder usar en el dashboard
+
+
+Create or alter proc sp_ReporteDashboard
+as
+begin
+
+select
+	(select count(*) from CLIENTE) [TotalCliente],
+	(select isnull(sum(cantidad),0) from DETALLE_VENTA) [TotalVenta],  --nos muestra la suma de cada cantidad , si es null, arroja 0
+	(select count(*) from PRODUCTO) [TotalProducto]
+end
+
+
+
+--Ahora trabajaremos con las fechas para poder retornar en la lista del dashboard por fechas
+--Usamos Paypal para hacer uso de la transacción
+--Formato fecha CONVERT
+--Unir nombre y apellido CONCAT
+
+--Se crea el procedimiento almacenado
+create or alter proc sp_ReporteVentas(
+@fechaInicio varchar(10),
+@fechaFin varchar(10),
+@idTransaccion varchar(50)
+)
+as
+begin
+	set dateformat dmy; --day/month/year = dia/mes/año
+	select CONVERT (char(10),v.FechaVenta,103)[FechaVenta],CONCAT( c.Nombres,' ',c.Apellidos)[Cliente],
+	p.Nombre[Producto], p.Precio, dv.Cantidad, dv.Total, v.IdTransaccion from DETALLE_VENTA dv
+	inner join PRODUCTO p on p.IdProducto = dv.IdProducto
+	inner join Venta v on v.IdVenta = dv.IdVenta
+	inner join Cliente c on c.IdCliente = v.IdCliente
+	where CONVERT(date, v.FechaVenta) between @fechaInicio and @fechaFin
+	and v.IdTransaccion = iif(@idTransaccion = '', v.IdTransaccion,@idTransaccion)
+end
+
+select * from USUARIO
+go

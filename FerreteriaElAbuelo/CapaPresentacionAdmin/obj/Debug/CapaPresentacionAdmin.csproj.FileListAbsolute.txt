@@ -90,3 +90,11 @@ E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\CapaDatos
 E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\CapaEntidad.pdb
 E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\CapaNegocio.pdb
 E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\CapaDatos.pdb
+E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\ClosedXML.dll
+E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\DocumentFormat.OpenXml.dll
+E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\ExcelNumberFormat.dll
+E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\System.IO.Packaging.dll
+E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\ClosedXML.pdb
+E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\ClosedXML.xml
+E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\DocumentFormat.OpenXml.xml
+E:\Proyecto-ExpFormativas\FerreteriaElAbuelo\CapaPresentacionAdmin\bin\ExcelNumberFormat.xml

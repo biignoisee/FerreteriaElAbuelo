@@ -14,6 +14,20 @@ namespace CapaNegocio
     {
         private CD_Reporte objCapaDato = new CD_Reporte();
 
+
+        //CAPA NEGOCIO MANEJO DE DATO
+
+        public List<Reporte> Ventas(string fechaInicio, string fechaFin, string idTransaccion)
+        {
+            return objCapaDato.Ventas(fechaInicio, fechaFin, idTransaccion);
+        }
+
+
+
+
+
+
+
         //Capa en donde aplicamos todas las reglas del negocio
         public Dashboard VerDashboard()
         {
