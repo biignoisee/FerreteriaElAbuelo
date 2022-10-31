@@ -515,6 +515,7 @@
     <Content Include="Views\Mantenimiento\Productos.cshtml" />
     <Content Include="Views\Mantenimiento\Categorias.cshtml" />
     <Content Include="Views\Acceso\Index.cshtml" />
+    <Content Include="Views\Acceso\CambiarClave.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
