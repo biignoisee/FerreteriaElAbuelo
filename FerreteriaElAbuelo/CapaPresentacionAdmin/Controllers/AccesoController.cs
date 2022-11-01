@@ -7,6 +7,10 @@ using System.Web.Mvc;
 using CapaEntidad;
 using CapaNegocio;
 
+
+//autenticacion por formularios, que nadie entre por las url
+using System.Web.Security;
+
 namespace CapaPresentacionAdmin.Controllers
 {
     public class AccesoController : Controller
@@ -52,6 +56,10 @@ namespace CapaPresentacionAdmin.Controllers
                     TempData["IdUsuario"] = oUsuario.IdUsuario;
                     return RedirectToAction("CambiarClave");
                 }
+
+                //autenticacion por medio del correo
+                FormsAuthentication.SetAuthCookie(oUsuario.Correo, false);
+
 
                 ViewBag.Error = null;
                 return RedirectToAction("Index", "Home");
@@ -105,5 +113,43 @@ namespace CapaPresentacionAdmin.Controllers
                 return View();
             }
         }
+
+
+        [HttpPost]
+        public ActionResult ReestablecerClave(string correo)
+        {
+            Usuario oUsuario = new Usuario();
+
+            oUsuario = new CN_Usuarios().Listar().Where(item => item.Correo == correo).FirstOrDefault();
+
+            if(oUsuario == null)
+            {
+                ViewBag.Error = "No se encontro un usuario con ese correo";
+                return View();
+            }
+
+            string mensaje = string.Empty;
+            bool respuesta = new CN_Usuarios().ReestablacerClave(oUsuario.IdUsuario, correo, out mensaje);
+
+            if (respuesta)
+            {
+                ViewBag.Error = null;
+                return RedirectToAction("Index", "Acceso");
+            }
+            else
+            {
+                ViewBag.Error = mensaje;
+                return View();
+            }
+
+        }
+
+        //cerrar sesion
+        public ActionResult CerrarSesion()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index", "Acceso");
+        }
+
     }
 }

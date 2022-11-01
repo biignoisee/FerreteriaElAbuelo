@@ -128,7 +128,7 @@ namespace CapaNegocio
             if (resultado)
             {
                 string asunto = "Contraseña Reestablecida";
-                string mensaje_correo = "<h3>Su cuenta fue reestablecida correctamente</h3></br><p>Su contraseña para acceder es!clave!</p>";
+                string mensaje_correo = "<h3>Su cuenta fue reestablecida correctamente</h3></br><p>Su contraseña para acceder es: !clave!</p>";
                 mensaje_correo = mensaje_correo.Replace("!clave!", nuevaClave);
                 bool respuesta = CN_Recursos.EnviarCorreo(correo, asunto, mensaje_correo);
 

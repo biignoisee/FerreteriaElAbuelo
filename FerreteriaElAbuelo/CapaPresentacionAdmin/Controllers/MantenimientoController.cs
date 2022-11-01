@@ -16,6 +16,7 @@ using System.IO;
 
 namespace CapaPresentacionAdmin.Controllers
 {
+    [Authorize]
     public class MantenimientoController : Controller
     {
         // Trabajar con el Controlador de Categorias
