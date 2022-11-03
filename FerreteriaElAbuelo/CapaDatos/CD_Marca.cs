@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using CapaEntidad;
 using System.Data.SqlClient;
 using System.Data;
+using System.Reflection;
 
 
 namespace CapaDatos
@@ -167,6 +168,60 @@ namespace CapaDatos
 
             return resultado;
         }
+
+
+
+        //LISTAR PARA LA VIEW CLIENTE
+
+        public List<Marca> ListarMarcaPorCategoria(int idCategoria)
+        {
+            List<Marca> listaMarca = new List<Marca>();
+
+            try
+            {
+                using (SqlConnection oconexion = new SqlConnection(Conexion.connection))
+                {
+                    StringBuilder sb = new StringBuilder();
+
+                    sb.AppendLine("select DISTINCT m.IdMarca, m.Descripcion from Producto p");
+                    sb.AppendLine("inner join Categoria c on c.IdCategoria = p.IdCategoria");
+                    sb.AppendLine("inner Join Marca m on m.IdMarca = p.IdMarca and m.Activo = 1");
+                    sb.AppendLine("where c.IdCategoria = iif(@idCategoria = 0, c.IdCategoria, @idCategoria)");
+
+
+                    SqlCommand command = new SqlCommand(sb.ToString(), oconexion);
+                    command.Parameters.AddWithValue("@idCategoria",idCategoria);
+                    command.CommandType = CommandType.Text;
+
+                    oconexion.Open();
+
+                    using (SqlDataReader datareader = command.ExecuteReader())
+                    {
+                        while (datareader.Read())
+                        {
+                            listaMarca.Add(
+                                new Marca()
+                                {
+                                    IdMarca = Convert.ToInt32(datareader["IdMarca"]),
+                                    Descripcion = datareader["Descripcion"].ToString(),
+                                });
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                listaMarca = new List<Marca>();
+            }
+
+            return listaMarca;
+
+        }
+
+
+
+
+
 
     }
 }
