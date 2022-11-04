@@ -28,15 +28,42 @@
                     @if (Session["Cliente"] != null)
                     {
 
-                        <button class="btn btn-success agregarcarrito flex-shink-0 w-50" type="button" data-idproducto="@Html.DisplayTextFor(m => m.IdProducto)">
+                        <button class="btn btn-success agregarCarrito flex-shink-0 w-50" type="button" data-idproducto="@Html.DisplayTextFor(m => m.IdProducto)">
                             <i class="fas fa-cart-plus"></i> Agregar al carrito
                         </button>
                     }
-
-
 
                 </div>
             </div>
         </div>
     </div>
 </section>
+
+
+@section scripts{
+    <script>
+        $(document).on("click", "button.agregarCarrito", function () {
+            console.log($(this).data("idproducto"))
+
+            jQuery.ajax({
+                url: '@Url.Action("AgregarCarrito", "Tienda")',
+                type: "POST",
+                data: JSON.stringify({ idProducto: $(this).data("idproducto") }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    if (data.respuesta) {
+                        MostrarCantidadCarrito();
+                        swal("", "Agregado al Carrito", "success");
+
+
+                    } else {
+                        swal("", data.mensaje, "warning");
+                    }
+                }
+            });
+
+        })
+    </script>
+}
+

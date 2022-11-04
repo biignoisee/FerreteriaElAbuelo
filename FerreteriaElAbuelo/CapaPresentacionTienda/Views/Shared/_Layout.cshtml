@@ -43,7 +43,7 @@
                         <a class="btn btn-outline-dark" href="@Url.Action("Carrito","Tienda")">
                             <i class="fas fa-gifts me-1"></i>
                             Carrito de Compra
-                            <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
+                            <span class="badge bg-dark text-white ms-1 rounded-pill" id="cantidadCarrito">0</span>
                         </a>
 
                         <ul class="navbar-nav ms-auto me-0 me-md-3 my-2 my-md-0">
@@ -80,5 +80,26 @@
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
     @RenderSection("scripts", required: false)
+
+
+    <script>
+        $(document).ready(function () {
+            MostrarCantidadCarrito()
+        })
+
+        function MostrarCantidadCarrito() {
+            if ($("#cantidadCarrito").length > 0) {
+                jQuery.ajax({
+                    url: '@Url.Action("CantidadEnCarrito","Tienda")',
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=utf-8",
+                    success: function (data) {
+                        $("#cantidadCarrito").text(data.cantidad)
+                    }
+                });
+            }
+        } 
+    </script>
 </body>
 </html>
