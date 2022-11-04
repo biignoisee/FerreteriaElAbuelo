@@ -548,7 +548,7 @@ select
 	(select isnull(sum(cantidad),0) from DETALLE_VENTA) [TotalVenta],  --nos muestra la suma de cada cantidad , si es null, arroja 0
 	(select count(*) from PRODUCTO) [TotalProducto]
 end
-
+go
 
 
 --Ahora trabajaremos con las fechas para poder retornar en la lista del dashboard por fechas
@@ -576,3 +576,171 @@ end
 
 select * from USUARIO
 go
+
+
+
+--AHORA TOCA TRABAJAR CON EL MODULO PRESENTADO DE LA TIENDA, LA VISTA POR PARTE DEL CLIENTE
+select * from CLIENTE
+go
+
+
+create or alter proc sp_RegistrarCliente(
+	@Nombres varchar(100),
+	@Apellidos varchar(100),
+	@Correo varchar(100),
+	@Clave varchar(100),
+	@Mensaje varchar(500) output,
+	@Resultado int output
+)
+as
+begin
+	SET @Resultado = 0
+	IF NOT EXISTS (SELECT * FROM CLIENTE WHERE Correo = @Correo)
+	begin
+		insert into CLIENTE(Nombres, Apellidos, Correo, Clave, Reestablecer) VALUES
+		(@Nombres, @Apellidos, @Correo, @Clave, 0)
+
+		SET @Resultado = SCOPE_IDENTITY()
+	end
+	else
+		set @Mensaje = 'El corre del usuario ya existe'
+end
+
+--Trabajamos con procedimiento almacenados para que nos liste los productos mediante la selección de categorias y marcas
+
+declare @idCategoria int = 0
+select DISTINCT m.IdMarca, m.Descripcion from Producto p
+inner join Categoria c on c.IdCategoria = p.IdCategoria
+inner Join Marca m on m.IdMarca = p.IdMarca and m.Activo = 1
+where c.IdCategoria = iif(@idCategoria = 0, c.IdCategoria, @idCategoria)
+go
+
+--Procedimientos Almacenados Carrito
+
+create or alter proc sp_ExisteCarrito(
+	@IdCliente int,
+	@IdProducto int,
+	@Resultado bit output
+)
+as
+begin
+	if exists(select * from CARRITO where IdCliente = @IdCliente and IdProducto =@IdProducto)
+		set @Resultado = 1
+	else 
+		set @Resultado = 0
+end
+go
+
+--el procedimiento almacenado más largo que he echo jaja
+
+create or alter proc sp_OperacionCarrito(
+	@IdCliente int,
+	@IdProducto int,
+	@Sumar bit,
+	@Mensaje varchar(500) output,
+	@Resultado bit output
+)
+as
+begin
+	set @Resultado = 1
+	set @Mensaje = ''
+
+	declare @existecarrito bit = iif (exists(select * from CARRITO where IdCliente = @IdCliente and IdProducto =@IdProducto),1,0)
+	declare @stockproducto int = (select stock from PRODUCTO where IdProducto = @IdProducto)
+
+	BEGIN TRY -- TRABAJAMOS CON TRANSACTION PORQUE OPERAMOS CON VALORES EN TIEMPO REAL
+		BEGIN TRANSACTION OPERACION --LOGICA DE LA SUMA DE ARTICULOS SELECCIONADOS AL CARRITO DE COMPRAS
+
+		if(@Sumar = 1)
+		begin
+			
+			if(@stockproducto >0)
+			begin
+				if(@existecarrito = 1)
+					update CARRITO set Cantidad = Cantidad + 1 where IdCliente = @IdCliente and IdProducto =@IdProducto
+				else
+					insert into CARRITO(IdCliente, IdProducto, Cantidad) values (@IdCliente, @IdProducto, 1)
+
+				update PRODUCTO set Stock = Stock - 1 where IdProducto =@IdProducto
+			end
+			else
+			begin
+				set @Resultado = 0
+				set @Mensaje = 'El producto no cuenta con stock disponible'
+			end
+		end
+		else
+		begin
+			update CARRITO set Cantidad = Cantidad - 1 where IdCliente = @IdCliente and IdProducto =@IdProducto
+			update PRODUCTO set Stock = Stock + 1 where IdProducto =@IdProducto
+		end
+		Commit Transaction OPERACION
+	
+
+	END TRY
+	BEGIN CATCH
+		set @Resultado = 0
+		set @Mensaje = ERROR_MESSAGE()
+		Rollback Transaction OPERACION
+	END CATCH
+end
+go
+
+
+--creamos funcion que retornara el id cliente y la lógica para que retorne los datos requeridos
+create function fn_obtenerCarritoCliente(
+	@idCliente int
+)
+returns table
+as
+return(
+	select p.IdProducto, m.Descripcion[DesMarca], p.Nombre, p.Precio, c.Cantidad,p.RutaImagen,p.NombreImagen
+	from Carrito c
+	inner join Producto p on p.IdProducto = C.IdProducto
+	inner join Marca m on m.IdMarca = p.IdMarca
+	where c.IdCliente = @idCliente
+)
+
+select * from fn_obtenerCarritoCliente(1)
+go
+
+--crear proc almacenado de eliminarCarrito
+
+create or alter proc sp_EliminarCarrito(
+@IdCliente int,
+@IdProducto int,
+@Resultado bit output
+)
+as
+begin
+	set @Resultado = 1
+	declare @cantidadproducto int = (select Cantidad from CARRITO where IdCliente = @IdCliente AND IdProducto = @IdProducto)
+
+	begin try
+
+		begin transaction OPERACION
+
+		UPDATE PRODUCTO SET STOCK = STOCK +@cantidadproducto WHERE IdProducto = @IdProducto
+		DELETE TOP(1) FROM CARRITO WHERE IdCliente = @IdCliente AND IdProducto = @IdProducto
+
+		COMMIT TRANSACTION OPERACION
+	END TRY
+
+	BEGIN CATCH
+		SET @Resultado = 0
+		ROLLBACK TRANSACTION OPERACION
+	END CATCH
+END
+go
+
+
+select DISTINCT * from DEPARTAMENTO
+go
+
+select DISTINCT * from PROVINCIA where IdDepartamento = '01'
+GO
+
+select DISTINCT * from DISTRITO where IdProvincia = '0101' and IdDepartamento = '01'
+go
+
+

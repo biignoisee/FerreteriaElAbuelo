@@ -9,6 +9,7 @@ using CapaNegocio;
 
 using System.IO;
 using Antlr.Runtime.Misc;
+using System.Web.Services.Description;
 
 namespace CapaPresentacionTienda.Controllers
 {
@@ -184,5 +185,54 @@ namespace CapaPresentacionTienda.Controllers
 
             return Json(new { respuesta = respuesta, mensaje = mensaje }, JsonRequestBehavior.AllowGet);
         }
+
+
+
+
+
+        //TRABAJAMOS CON LA UBICACION
+
+        [HttpPost]
+        public JsonResult ObtenerDepartamento()
+        {
+            List<Departamento> oLista = new List<Departamento>();
+
+            oLista = new CN_Ubicacion().ObtenerDepartamento();
+
+            return Json(new { lista = oLista }, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+
+        [HttpPost]
+        public JsonResult ObtenerProvincia(string idDepartamento)
+        {
+            List<Provincia> oLista = new List<Provincia>();
+
+            oLista = new CN_Ubicacion().ObtenerProvincia(idDepartamento);
+
+            return Json(new { lista = oLista }, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+        [HttpPost]
+        public JsonResult ObtenerDistritos(string idDepartamento, string idProvincia)
+        {
+            List<Distrito> oLista = new List<Distrito>();
+
+            oLista = new CN_Ubicacion().ObtenerDistritos(idDepartamento, idProvincia);
+
+            return Json(new { lista = oLista }, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+        public ActionResult Carrito()
+        {
+            return View();
+        }
+
     }
 }

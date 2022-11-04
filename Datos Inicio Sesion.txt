@@ -1,0 +1,12 @@
+Estamos usando correo temporales para la prueba
+Para tener acceso en el logueo, ingrese los datos:
+
+correo : jahirok761@dmtubes.com	
+contraseña: grupo09
+
+
+Automaticamente al generar un nuevo usuario, le brinda una contraseña autogenerada, nosotros en el avance 04 estamos
+enviando las correcciones para que el usuario pueda cambiar contraseña
+- El proyecto esta en un 80%, falta culminar unos cuantos puntos como listar los detallesVenta y mejorar el Logueo.
+Ademas de implementar la tienda con su carrito de compras.
+
