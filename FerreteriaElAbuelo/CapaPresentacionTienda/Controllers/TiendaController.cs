@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-
-using CapaEntidad;
+﻿using CapaEntidad;
 using CapaNegocio;
-
+using System.Collections.Generic;
 using System.IO;
-using Antlr.Runtime.Misc;
-using System.Web.Services.Description;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace CapaPresentacionTienda.Controllers
 {
@@ -153,9 +147,7 @@ namespace CapaPresentacionTienda.Controllers
                 Cantidad = oc.Cantidad
             }).ToList();
 
-
             return Json(new { data = oLista }, JsonRequestBehavior.AllowGet);
-
         }
 
 
