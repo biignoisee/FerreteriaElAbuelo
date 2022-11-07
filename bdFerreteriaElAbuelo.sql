@@ -494,6 +494,7 @@ begin
 end
 go
 
+
 --eliminar producto
 create or alter proc sp_EliminarProducto(
 @IdProducto int,
@@ -687,6 +688,9 @@ end
 go
 
 
+select * from cliente
+go
+
 --creamos funcion que retornara el id cliente y la lógica para que retorne los datos requeridos
 create function fn_obtenerCarritoCliente(
 	@idCliente int
@@ -700,9 +704,11 @@ return(
 	inner join Marca m on m.IdMarca = p.IdMarca
 	where c.IdCliente = @idCliente
 )
-
-select * from fn_obtenerCarritoCliente(1)
 go
+
+select * from fn_obtenerCarritoCliente(2)
+go
+
 
 --crear proc almacenado de eliminarCarrito
 
@@ -744,3 +750,68 @@ select DISTINCT * from DISTRITO where IdProvincia = '0101' and IdDepartamento = 
 go
 
 
+--UNA VENTA SIGNIFICA UNA LSITA ESTRUCTURA DE PRODUCTOS
+
+CREATE TYPE [dbo].[EDetalle_Venta] AS TABLE(
+	[IdProducto] int null,
+	[Cantidad]int null,
+	[Total] decimal(18,2) null
+)
+go
+
+create or alter procedure usp_RegistrarVenta(
+	@IdCliente int,
+	@TotalProducto int,
+	@MontoTotal decimal(18,2),
+	@Contacto varchar(100),
+	@IdDistrito varchar(6),
+	@Telefono varchar(10),
+	@Direccion varchar(100),
+	@IdTransaccion varchar(50),
+	@DetalleVenta [EDetalle_Venta] READONLY,
+	@Resultado bit output,
+	@Mensaje varchar(530) output
+)
+as
+begin	
+	begin try
+		declare @idVenta int= 0
+		set @Resultado = 1
+		set @Mensaje = ''
+
+		begin transaction registro
+		insert into VENTA(IdCliente,TotalProducto,MontoTotal,Contacto,IdDistrito,Telefono,Direccion,IdTransaccion)
+		values(@IdCliente,@TotalProducto,@MontoTotal,@Contacto,@IdDistrito,@Telefono,@Direccion,@IdTransaccion)
+
+		set @idVenta = SCOPE_IDENTITY()
+
+		insert into DETALLE_VENTA(IdVenta,IdProducto,Cantidad, Total)
+		select @idVenta,IdProducto,Cantidad,Total from @DetalleVenta
+
+		Delete from CARRITO WHERE IdCliente = @IdCliente
+
+		commit transaction registro
+	end try
+
+	begin catch
+		set @Resultado = 0
+		set @Mensaje = ERROR_MESSAGE()
+		rollback transaction registro
+	end catch
+end
+
+
+--Crear la consulta que nos permita ver toda las compras del cliente
+create function fn_ListarCompra(
+	@idCliente int
+)
+returns table
+as
+return
+(
+	Select p.RutaImagen, p.NombreImagen, p.Nombre, p.Precio,dv.Cantidad,dv.Total,v.IdTransaccion from DETALLE_VENTA dv
+	inner join PRODUCTO p on p.IdProducto = dv.IdProducto
+	inner join venta v on v.IdVenta = dv.IdVenta
+	where v.IdCliente = @idCliente
+)
+go

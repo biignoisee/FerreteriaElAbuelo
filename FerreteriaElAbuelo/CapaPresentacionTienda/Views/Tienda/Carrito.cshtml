@@ -398,10 +398,65 @@
                     }
                 }
             })
-
-
-
         })
+
+
+        function RealizarPago() {
+            if (parseInt($("#cantidadCarrito").text()) == 0) {
+                swal("", "No existe productos en el carrito", "warning");
+                return //evita a que se ejecute otra operacion
+            }
+
+            if ($("#cboDistrito").val() == null || $("#txtNombreContacto").val() == "" || $("#txtDireccion").val() == "" || $("#txtTelefono").val() == "") {
+                swal("", "Complete los datos del envio", "warning")
+                return //evita a que se ejecute otra operacion
+            }
+
+            var venta = {
+                TotalProducto: $("input.input-cantidad").length,
+                MontoTotal: 0,
+                Contacto: $("#txtNombreContacto").val(),
+                IdDistrito: $("#cboDistrito").val(),
+                Telefono: $("#txtTelefono").val(),
+                Direccion: $("#txtDireccion").val()
+            }
+
+            var lista_carrito = [];
+
+            $("input.input-cantidad").each(function (i) {
+                var producto = $(this).data("oProducto");
+                var cantidad = parseFloat($(this).val());
+
+                lista_carrito.push({
+                    oProducto: producto,
+                    Cantidad : cantidad
+                })
+            })
+
+            jQuery.ajax({
+                url: '@Url.Action("ProcesarPago", "Tienda")',
+                type: 'POST',
+                data: JSON.stringify({ oListaCarrito: lista_carrito, oVenta: venta }),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                success: function (data) {
+                    $.LoadingOverlay("hide")
+                    if (data.Status) {
+                        window.location.href = data.Link;
+                    } else {
+                        swal("", "Vuelve a intentarlo más tarde", "warning");
+                    }
+                },
+                beforeSend: function () {
+                    $.LoadingOverlay("show")
+                },
+                error: function (error) {
+                    $.LoadingOverlay("hide")
+                }
+            })
+
+
+        }
 
     </script>    
     
