@@ -9,5 +9,4 @@ Automaticamente al generar un nuevo usuario, le brinda una contraseña autogener
 
 --Para acceder a la capaPresentacionTienda
 
-correo: omaraguilar899@gmail.com
-contraseña: 123456
+necesitaras crear una cuenta, te llegara un correo
